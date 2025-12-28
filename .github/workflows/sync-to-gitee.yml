@@ -26,9 +26,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       
+      - name: 设置 SSH 密钥
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITEE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan gitee.com >> ~/.ssh/known_hosts
+      
       - name: 添加 Gitee 远程仓库
         run: |
-          git remote add gitee https://gitee.com/vincent-zyu/github-gitee-sync-test.git
+          git remote add gitee git@gitee.com:vincent-zyu/github-gitee-sync-test.git
       
       - name: 推送到 Gitee
         run: |

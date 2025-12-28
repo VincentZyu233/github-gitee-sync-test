@@ -17,6 +17,27 @@
 
 ## 🚀 GitHub Actions 配置
 
+### 前置要求
+
+在配置 GitHub Actions 之前，需要先完成以下步骤：
+
+1. **生成 SSH 密钥**
+   ```bash
+   ssh-keygen -t rsa -C "你的邮箱地址"
+   ```
+
+2. **在 Gitee 添加 SSH 公钥**
+   - 访问 https://gitee.com/profile/sshkeys
+   - 将生成的 `id_rsa.pub` 内容添加进去
+
+3. **在 GitHub 添加 Secret**
+   - 访问仓库的 Settings → Secrets and variables → Actions
+   - 添加 Secret：
+     - Name: `GITEE_PRIVATE_KEY`
+     - Value: `id_rsa` 私钥文件的完整内容
+
+### Workflow 配置
+
 Workflow 文件位于：`.github/workflows/sync-to-gitee.yml`
 
 ```yaml
@@ -48,9 +69,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       
+      - name: 设置 SSH 密钥
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GITEE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan gitee.com >> ~/.ssh/known_hosts
+      
       - name: 添加 Gitee 远程仓库
         run: |
-          git remote add gitee https://gitee.com/vincent-zyu/github-gitee-sync-test.git
+          git remote add gitee git@gitee.com:vincent-zyu/github-gitee-sync-test.git
       
       - name: 推送到 Gitee
         run: |
@@ -89,8 +117,8 @@ git push origin main
 如果需要同步到其他 Gitee 仓库，修改 `.github/workflows/sync-to-gitee.yml` 中的以下内容：
 
 ```yaml
-# 修改这里的目标仓库地址
-git remote add gitee https://gitee.com/你的用户名/你的仓库名.git
+# 修改这里的目标仓库地址（使用 SSH 格式）
+git remote add gitee git@gitee.com:你的用户名/你的仓库名.git
 ```
 
 ### 修改同步频率
@@ -121,9 +149,11 @@ push:
 
 ## 💡 注意事项
 
-1. **分支映射**: 当前配置将 GitHub 的 `main` 分支推送到 Gitee 的 `master` 分支
-2. **强制推送**: 使用 `--force` 参数强制覆盖 Gitee 仓库
-3. **权限要求**: GitHub Actions 需要有仓库的写权限（默认已开启）
+1. **使用 SSH**: 本配置使用 SSH 方式推送，需要提前配置 SSH 密钥
+2. **分支映射**: 当前配置将 GitHub 的 `main` 分支推送到 Gitee 的 `master` 分支
+3. **强制推送**: 使用 `--force` 参数强制覆盖 Gitee 仓库
+4. **权限要求**: GitHub Actions 需要有仓库的写权限（默认已开启）
+5. **密钥安全**: `GITEE_PRIVATE_KEY` 包含敏感信息，切勿泄露
 
 ## 📚 相关资源
 
