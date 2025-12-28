@@ -47,6 +47,8 @@ jobs:
         run: |
           git remote add gitlab git@gitlab.com:VincentZyu233/github-gitee-sync-test.git
       
+      # GitLab is more conservative and does not recommend using --force when pushing.
       - name: 推送到 GitLab
         run: |
-          git push gitlab main:main --force
+          git push gitlab main:main
+
