@@ -48,7 +48,8 @@ jobs:
           git remote add gitlab git@gitlab.com:VincentZyu233/github-gitee-sync-test.git
       
       # GitLab is more conservative and does not recommend using --force when pushing.
+      # 或者需要跑到https://gitlab.com/VincentZyu233/github-gitee-sync-test/-/settings/repository/branch_rules?branch=main，然后tm把Allow force push 给打开
       - name: 推送到 GitLab
         run: |
-          git push gitlab main:main
+          git push gitlab main:main --force
 
