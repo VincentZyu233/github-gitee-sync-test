@@ -1,4 +1,4 @@
-name: Sync to Gitee
+name: Sync to Multiple Platforms
 
 on:
   # 推送时触发
@@ -29,9 +29,11 @@ jobs:
       - name: 设置 SSH 密钥
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.GITEE_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
           ssh-keyscan gitee.com >> ~/.ssh/known_hosts
+          ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
       
       - name: 添加 Gitee 远程仓库
         run: |
@@ -40,3 +42,11 @@ jobs:
       - name: 推送到 Gitee
         run: |
           git push gitee main:master --force
+      
+      - name: 添加 GitLab 远程仓库
+        run: |
+          git remote add gitlab git@gitlab.com:VincentZyu233/github-gitee-sync-test.git
+      
+      - name: 推送到 GitLab
+        run: |
+          git push gitlab main:main --force
