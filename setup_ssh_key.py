@@ -40,17 +40,19 @@ def main():
         if choice != 'y':
             print("使用现有密钥...")
         else:
-            print("正在生成新的 SSH 密钥...")
+            print("正在生成新的 SSH 密钥（传统 PEM 格式）...")
+            # 使用 -m PEM 生成传统格式的 RSA 密钥，兼容性更好
             returncode, stdout, stderr = run_command(
-                f'ssh-keygen -t rsa -b 4096 -C "github-actions-sync" -f "{private_key_path}" -N ""'
+                f'ssh-keygen -t rsa -b 4096 -m PEM -C "github-actions-sync" -f "{private_key_path}" -N ""'
             )
             if returncode != 0:
                 print(f"❌ 生成密钥失败: {stderr}")
                 return
     else:
-        print("正在生成新的 SSH 密钥...")
+        print("正在生成新的 SSH 密钥（传统 PEM 格式）...")
+        # 使用 -m PEM 生成传统格式的 RSA 密钥，兼容性更好
         returncode, stdout, stderr = run_command(
-            f'ssh-keygen -t rsa -b 4096 -C "github-actions-sync" -f "{private_key_path}" -N ""'
+            f'ssh-keygen -t rsa -b 4096 -m PEM -C "github-actions-sync" -f "{private_key_path}" -N ""'
         )
         if returncode != 0:
             print(f"❌ 生成密钥失败: {stderr}")
